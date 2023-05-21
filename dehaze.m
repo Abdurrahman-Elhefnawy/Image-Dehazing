@@ -20,8 +20,8 @@ imagesc(I)
 [m, n, c] = size(I_c);
 
 % % Normalize 
-mm = max(max(max(I_c)));
-I_c = I_c./mm;
+% mm = max(max(max(I_c)));
+% I_c = I_c./mm;
 
 % Display low subband (compressed)
 figure
@@ -65,3 +65,23 @@ cvx_begin
         0 <= Q_c
         
 cvx_end
+
+
+%%
+%Reconstruct the haze-free image
+%%
+%broadcast t matrix
+t3 = cat(3,t,t,t);
+
+%Retrieve original image
+Jc = Q_c ./ t3;
+
+%normalize the image for visualization
+mm = max(max(max(Jc)));
+Jc = Jc./mm;
+imagesc(Jc)
+
+
+
+
+
