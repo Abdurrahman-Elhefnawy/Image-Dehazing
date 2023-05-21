@@ -1,19 +1,26 @@
 clear;
 clc;
 
+%%
 %constants
+%%
 lambda_1 = 0.02;
 lambda_2 = 0.002;
 lambda_3 = 0.04;
 
-% Input image
+%%
+%import hazzy image 
+%%
 I = imread('examples/sam_4.bmp');
 I = imresize( I, 0.2);
 % Display input image
 figure
 imagesc(I)
 
-% haar wavelet transform (1 level)
+
+%%
+% Haar wavelet transform (1 level)
+%%
 [I_c, H_c, V_c, D_c]=haart2(I, 1);
 
 % extract image shape 
@@ -27,7 +34,10 @@ imagesc(I)
 figure
 imagesc(I_c)    
 
-% Airlight calculation
+
+%%
+% Estimate Airlight constant
+%%
 wsz = 15; % window size
 a_c = Airlight(I, wsz);
 
@@ -38,23 +48,32 @@ Ac3 =  a_c(3) + zeros( m, n, 1);
 A_c = cat(3,Ac1,Ac2,Ac3);
 
 
-%create Yc
+
+%%
+% create Yc
+%%
 Y_c = I_c - A_c;
 
 
+%%
+%Cvx Optimization 
+%%
 cvx_begin
     variables t(m, n) Q_c(m, n, c)
     
     %construct the objective function 
     obj_func = 0;
     for i = 1:c
-        obj_func = obj_func + norm(Y_c(:,:,i) - Q_c(:,:,i) + a_c(i)*t);
+        obj_func = obj_func + square_pos(norm((Y_c(:,:,i) - Q_c(:,:,i) + a_c(i)*t)) ) ;
     end
-    obj_func = obj_func + lambda_1* norm(t, 2);
+    
+    obj_func = obj_func + lambda_1* square_pos(norm(t));
     obj_func = obj_func + lambda_2* norm(t,'fro');
+    
     for i = 1:c
-        obj_func = obj_func + norm(Q_c(:,:,1) ,2);
+        obj_func = obj_func + square_pos(norm(Q_c(:,:,1)) );
     end           
+    obj_func = obj_func *lambda_3;
     
     %minimize objective function 
     minimize (obj_func)
