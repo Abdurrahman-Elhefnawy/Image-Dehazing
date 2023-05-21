@@ -64,14 +64,14 @@ cvx_begin
     %construct the objective function 
     obj_func = 0;
     for i = 1:c
-        obj_func = obj_func + square_pos(norm((Y_c(:,:,i) - Q_c(:,:,i) + a_c(i)*t)) ) ;
+        obj_func = obj_func + (norm((Y_c(:,:,i) - Q_c(:,:,i) + a_c(i)*t)) ) ;
     end
     
-    obj_func = obj_func + lambda_1* square_pos(norm(t));
-    obj_func = obj_func + lambda_2* norm(t,'fro');
+    obj_func = obj_func + lambda_1* (norm(t));
+    obj_func = obj_func + lambda_2* norm(t);
     
     for i = 1:c
-        obj_func = obj_func + square_pos(norm(Q_c(:,:,1)) );
+        obj_func = obj_func + (norm(Q_c(:,:,1), 'fro') );
     end           
     obj_func = obj_func *lambda_3;
     
