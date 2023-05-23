@@ -14,7 +14,7 @@ lambda_3 = 0.02;
 I = imread('examples/sam_7.bmp');
 I_cropped = imcrop(I,[0 0 440 448]);
 
-I = imresize( I_cropped, 0.5);
+I = imresize( I_cropped, 0.7);
 
 % Display input image
 % figure
@@ -68,8 +68,11 @@ cvx_begin
     %end
     
     obj_func = obj_func + lambda_1* square_pos(norm(t));
-    obj_func = obj_func + lambda_2* norm(t,'fro');
-    
+    for i = 1:c
+        for j = 1:c
+            obj_func = obj_func + lambda_2 * norm([t(i+1, j) - t(i, j); t(i, j+1) - t(i, j)], 2)
+        end
+    end
     for i = 1:c
         obj_func = obj_func + square_pos(norm(Q_c(:,:,1)) );
     end           
@@ -99,6 +102,10 @@ Jc = Q_c ./ t3;
 %normalize the image for visualization
 mm = max(max(max(Jc)));
 Jc = Jc./mm;
+
+% 
+% Jc = idwt2(mm*Jc, H_c./t, V_c./t, D_c./t, 'haar');
+
 
 figure();
 imagesc(Jc);
