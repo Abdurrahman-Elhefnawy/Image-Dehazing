@@ -20,6 +20,6 @@ row = mod(id, nRows);
 col = floor(id / nRows) + 1;
 
 % A is a vector
-A = HazeImg(row, col, :);
+A = HazeImg(row, col, :);   
 A = double(A(:));
 
